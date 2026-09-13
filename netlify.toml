@@ -1,0 +1,66 @@
+# AGRILINK — Netlify configuration
+# Static site, no build step. Works with:
+#   • Netlify Drop (drag the folder or agrilink-netlify.zip onto app.netlify.com/drop)
+#   • Git integration (Netlify auto-detects: build command empty, publish = repo root)
+#   • Netlify CLI:  npx netlify-cli deploy --prod --dir .
+
+[build]
+  publish = "."
+  # No build command: plain HTML/CSS/JS, everything runs client-side.
+
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = false
+  minify = false
+
+[build.processing.js]
+  bundle = false
+  minify = false
+
+[build.processing.html]
+  pretty_urls = true
+
+# ---------------------------------------------------------------- security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), payment=(), usb=()"
+    X-Frame-Options = "SAMEORIGIN"
+
+# HTML, JS and CSS always revalidate so a redeploy is picked up instantly
+# (filenames are not hashed in this prototype).
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/404.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Icons / OG image are content-addressed by hand → cache long
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+[[headers]]
+  for = "/site.webmanifest"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Type = "application/manifest+json"

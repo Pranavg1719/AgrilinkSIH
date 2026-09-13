@@ -1,0 +1,44 @@
+{
+  "name": "AGRILINK — Farm to Customer Supply Chain",
+  "short_name": "AGRILINK",
+  "description": "Working prototype of a monitored agricultural supply chain: Farmer → Inventory Vendor → Delivery Partner → Customer, with a Government control dashboard. All data simulated locally.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#0C4A28",
+  "theme_color": "#14713C",
+  "lang": "en",
+  "categories": ["productivity", "utilities", "business"],
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Government dashboard",
+      "short_name": "Gov",
+      "description": "Monitoring, traceability and kala-bajari watch",
+      "url": "/?role=gov",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

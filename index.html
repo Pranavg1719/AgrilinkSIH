@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14713C">
+<meta name="description" content="AGRILINK — an agricultural supply chain app: Farmer → Inventory Vendor → Delivery Partner → Customer, with a Government monitoring system.">
+<title>AGRILINK · Farm → Vendor → Delivery → Customer</title>
+
+<!-- installable PWA-ish metadata -->
+<link rel="manifest" href="site.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AGRILINK">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+
+<!-- link previews (og:image / canonical are made absolute at boot, so sharing works on any Netlify domain) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AGRILINK">
+<meta property="og:title" content="AGRILINK — Farm → Vendor → Delivery → Customer">
+<meta property="og:description" content="A monitored agricultural supply chain: 13 Indian languages, AI crop grading, max 3 vendors per lot, 30% free / 70% reserved stock, optimised delivery routes, kala-bajari alerts and batch traceability.">
+<meta property="og:image" content="assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AGRILINK — Farm → Vendor → Delivery → Customer">
+<meta name="twitter:description" content="An agricultural supply-chain app with a government control dashboard.">
+<meta name="twitter:image" content="assets/og-cover.png">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+/* Hide any host-injected "Powered by Netlify" badge / drawer (Free-plan overlay).
+   Cleanest removal: Netlify dashboard → Project configuration → General → Powered by Netlify badge → Off. */
+[id*="netlify" i],[class*="netlify" i],iframe[src*="netlify" i],a[href*="netlify" i],[data-testid*="netlify" i]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2314713C'/><path d='M24 8c0 9-5.5 14-12 14H9c0-8 5-13 12-13 1.5 0 3 0 3-.0z M9 24c2-5 5-8 9-10' stroke='%23CFEFD8' stroke-width='2.2' fill='none' stroke-linecap='round'/></svg>">
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <div class="topbar-in">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c0 9-5.5 14-12 14H5c0-8 5-13 12-13 1.5 0 3 0 3-.0z"/><path d="M5 20c2-5 5-8 9-10"/></svg>
+        </div>
+        <div>
+          <div class="brand-t">AGRILINK</div>
+          <div class="brand-s">Farm → Vendor → Delivery → Customer · Gov monitored</div>
+        </div>
+      </div>
+
+      <nav class="roleswitch" id="roleSwitch" role="tablist" aria-label="Choose your interface"></nav>
+
+      <div class="topactions">
+        <div class="healthpill" id="healthPill" title="Algorithm 4 — pipeline health monitor">
+          <span class="dot"></span><span class="lbl" id="healthTxt">CHECKING…</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="stage"></main>
+
+  <div id="toasts" aria-live="polite"></div>
+  <div id="modalRoot"></div>
+  <div class="flash" id="flash"></div>
+</div>
+
+<script src="js/i18n.js"></script>
+<script src="js/seed.js"></script>
+<script src="js/algo.js"></script>
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/apps/farmer.js"></script>
+<script src="js/apps/vendor.js"></script>
+<script src="js/apps/customer.js"></script>
+<script src="js/apps/delivery.js"></script>
+<script src="js/apps/gov.js"></script>
+<script src="js/apps/center.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/app.js"></script>
+<script>
+  /* boot + deploy-friendly absolute meta tags + deep links */
+  (function () {
+    try {
+      var base = location.origin + location.pathname.replace(/[^/]*$/, '');
+      var set = function (sel, attr, val) { var n = document.querySelector(sel); if (n) n.setAttribute(attr, val); };
+      set('meta[property="og:image"]', 'content', base + 'assets/og-cover.png');
+      set('meta[name="twitter:image"]', 'content', base + 'assets/og-cover.png');
+      var mu = document.createElement('meta');
+      mu.setAttribute('property', 'og:url'); mu.setAttribute('content', base); document.head.appendChild(mu);
+      var lc = document.createElement('link'); lc.rel = 'canonical'; lc.href = base; document.head.appendChild(lc);
+    } catch (e) { }
+    function boot() { try { AG.app.init(); } catch (e) { console.error('AGRILINK boot failed', e); } }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+  })();
+</script>
+<script>
+/* Removes the host-injected "Powered by Netlify" badge/drawer if CSS alone is not enough.
+   Watches only direct <body> children, so the app's own rendering is untouched. */
+(function () {
+  var RE = /netlify/i;
+  function suspect(n) {
+    try {
+      if (!n || n.nodeType !== 1 || n.tagName === 'SCRIPT' || n.id === 'app') return false;
+      var a = (n.id || '') + ' ' + (typeof n.className === 'string' ? n.className : '') + ' ' +
+        ((n.getAttribute && (n.getAttribute('src') || '')) || '') + ' ' +
+        ((n.getAttribute && (n.getAttribute('href') || '')) || '') + ' ' +
+        ((n.getAttribute && (n.getAttribute('data-testid') || '')) || '');
+      if (RE.test(a)) return true;
+      if (n.querySelector && n.querySelector('[id*="netlify" i],[class*="netlify" i],iframe[src*="netlify" i],a[href*="netlify" i]')) return true;
+    } catch (e) { }
+    return false;
+  }
+  function sweep() {
+    try {
+      if (!document.body) return;
+      for (var i = document.body.children.length - 1; i >= 0; i--) {
+        var n = document.body.children[i];
+        if (suspect(n)) n.parentNode.removeChild(n);
+      }
+      var deep = document.querySelectorAll('[id*="netlify" i],[class*="netlify" i],iframe[src*="netlify" i]');
+      for (var j = 0; j < deep.length; j++) {
+        var d = deep[j];
+        if (d.closest && d.closest('#app')) continue;
+        if (d.parentNode) d.parentNode.removeChild(d);
+      }
+    } catch (e) { }
+  }
+  sweep();
+  document.addEventListener('DOMContentLoaded', sweep);
+  if (window.MutationObserver && document.body) {
+    try {
+      new MutationObserver(function (muts) {
+        for (var k = 0; k < muts.length; k++) {
+          var added = muts[k].addedNodes;
+          for (var m = 0; m < added.length; m++) if (suspect(added[m])) sweep();
+        }
+      }).observe(document.body, { childList: true });
+    } catch (e) { }
+  }
+  setTimeout(sweep, 800); setTimeout(sweep, 2500); setTimeout(sweep, 6000);
+})();
+</script>
+</body>
+</html>
